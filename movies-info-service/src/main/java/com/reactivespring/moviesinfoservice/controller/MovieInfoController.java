@@ -18,13 +18,13 @@ public class MovieInfoController {
     }
 
 
-    @PostMapping("/movieinfos")
+    @PostMapping("/movieinfo")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<MovieInfo> addMovieInfo(@RequestBody MovieInfo movieInfo){
         return movieInfoService.addMovieInfo(movieInfo);
     }
 
-    @GetMapping("/movieinfos")
+    @GetMapping("/movieinfo")
     public Flux<MovieInfo> teste(){
         return movieInfoService.findAll();
     }
