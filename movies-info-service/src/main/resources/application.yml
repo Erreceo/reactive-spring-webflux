@@ -1,0 +1,40 @@
+spring:
+  profiles:
+    active: local
+  mongodb:
+    embedded:
+      version: 5.0.6
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  data:
+    mongodb:
+      host: localhost
+      database: local
+      password: ZXhhbXBsZQ==
+      username: root
+      authentication-database: admin
+#      uri: mongodb://root:ZXhhbXBsZQ==@localhost/spring
+---
+spring:
+  config:
+    activate:
+      on-profile: non-prod
+  data:
+    mongodb:
+      host: localhost
+      port: 27027
+      database: local
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  data:
+    mongodb:
+      host: localhost
+      port: 27027
+      database: local
+
