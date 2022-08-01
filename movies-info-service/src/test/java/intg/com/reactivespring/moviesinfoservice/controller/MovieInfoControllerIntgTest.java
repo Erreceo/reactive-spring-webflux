@@ -65,4 +65,15 @@ class MovieInfoControllerIntgTest {
                     assertNotNull(savedMovieInfo.getMovieInfoId());
                 });
     }
+
+    @Test
+    void getAllMovieInfos() {
+        webTestClient.get()
+                .uri(MOVIES_INFO_URI)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBodyList(MovieInfo.class)
+                .hasSize(3);
+    }
 }

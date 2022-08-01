@@ -25,8 +25,8 @@ public class MovieInfoController {
     }
 
     @GetMapping("/movieinfo")
-    public Flux<MovieInfo> teste(){
-        return movieInfoService.findAll();
+    public Flux<MovieInfo> getAllMovies(){
+        return movieInfoService.getAllMovieInfos();
     }
 
 }

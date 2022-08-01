@@ -21,7 +21,8 @@ public class MovieInfoService {
         return movieInfoRepository.save(movieInfo).log();
     }
 
-    public Flux<MovieInfo> findAll(){
+    public Flux<MovieInfo> getAllMovieInfos(){
         return movieInfoRepository.findAll();
     }
+
 }
