@@ -76,4 +76,68 @@ class MovieInfoControllerIntgTest {
                 .expectBodyList(MovieInfo.class)
                 .hasSize(3);
     }
+
+    @Test
+    void getAllMovieInfoById() {
+
+        var MOVIE_ID = "abc";
+
+        webTestClient.get()
+                .uri(MOVIES_INFO_URI+"/{id}",MOVIE_ID)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.name").isEqualTo("Dark Knight Rises");
+
+//                .expectBody(MovieInfo.class)
+//                .consumeWith(listEntityExchangeResult -> {
+//                    var movieInfo = listEntityExchangeResult.getResponseBody();
+//                    assertEquals(MOVIE_ID,movieInfo.getMovieInfoId());
+//                });
+    }
+
+    @Test
+    void updateMovieInfoById() {
+
+        var MOVIE_ID = "abc";
+        var movieInfo = new MovieInfo("abc", "Dark Knight Rises 1",
+                2012, List.of("Christian Bale", "Tom Hardy"), LocalDate.parse("2012-07-20"));
+
+        webTestClient.put()
+                .uri(MOVIES_INFO_URI+"/{id}",MOVIE_ID)
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+
+                .expectBody(MovieInfo.class)
+                .consumeWith(listEntityExchangeResult -> {
+                    var updatedMovieInfo = listEntityExchangeResult.getResponseBody();
+                    assertNotNull(updatedMovieInfo);
+                    assertEquals("Dark Knight Rises 1", updatedMovieInfo.getName());
+
+                });
+    }
+
+    @Test
+    void deleteMovieInfo(){
+        var MOVIE_ID = "abc";
+
+
+        webTestClient.delete()
+                .uri(MOVIES_INFO_URI+"/{id}",MOVIE_ID)
+                .exchange()
+                .expectStatus()
+                .isNoContent();
+
+        webTestClient.get()
+                .uri(MOVIES_INFO_URI)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBodyList(MovieInfo.class)
+                .hasSize(2);
+    }
+
 }
