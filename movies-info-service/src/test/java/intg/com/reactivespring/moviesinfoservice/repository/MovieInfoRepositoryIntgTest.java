@@ -83,8 +83,6 @@ public class MovieInfoRepositoryIntgTest {
                     .assertNext(movieInfo1 -> assertEquals( 2021,movieInfo1.getYear()) )
                     .verifyComplete();
         }
-
-
     }
     @Test
     void deleteMovieInfo(){
@@ -96,6 +94,27 @@ public class MovieInfoRepositoryIntgTest {
                     .verifyComplete();
 
 
+
+    }
+
+    @Test
+    void findByYear(){
+        var moviesInfoFlux = movieInfoRepository.findByYear(2005).log();
+
+        StepVerifier.create(moviesInfoFlux)
+                .expectNextCount(1)
+                .verifyComplete();
+
+    }
+
+
+    @Test
+    void findByName(){
+        var moviesInfoFlux = movieInfoRepository.findByName("The Dark Knight").log();
+
+        StepVerifier.create(moviesInfoFlux)
+                .expectNextCount(1)
+                .verifyComplete();
 
     }
 

@@ -16,39 +16,50 @@ public class MovieInfoController {
 
     private MovieInfoService movieInfoService;
 
-    public MovieInfoController(MovieInfoService movieInfoService){
+    public MovieInfoController(MovieInfoService movieInfoService) {
         this.movieInfoService = movieInfoService;
     }
 
 
     @PostMapping("/movieinfo")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<MovieInfo> addMovieInfo(@RequestBody @Valid MovieInfo movieInfo){
+    public Mono<MovieInfo> addMovieInfo(@RequestBody @Valid MovieInfo movieInfo) {
         return movieInfoService.addMovieInfo(movieInfo);
     }
 
     @GetMapping("/movieinfo")
-    public Flux<MovieInfo> getAllMovies(){
-        return movieInfoService.getAllMovieInfos();
+    public Flux<MovieInfo> getAllMovies(@RequestParam(value = "year", required = false) Integer year, @RequestParam(value = "name", required = false) String name) {
+
+        if (year != null) {
+            return movieInfoService.getMovieInfoByYear(year).log();
+        }
+        if (name != null) {
+            return movieInfoService.getMovieByName(name)
+                    .flatMapMany(Flux::just).log();
+        }
+        return movieInfoService.getAllMovieInfos().log();
+        
     }
 
     @GetMapping("/movieinfo/{id}")
-    public Mono<ResponseEntity<MovieInfo>> getMovieInfoById(@PathVariable String id){
+    public Mono<ResponseEntity<MovieInfo>> getMovieInfoById(@PathVariable String id) {
         return movieInfoService.getMovieInfoById(id)
                 .map(movieInfo -> ResponseEntity.ok().body(movieInfo))
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
+
     @PutMapping("/movieinfo/{id}")
-    public Mono<ResponseEntity<MovieInfo>> updateMovieInfo(@RequestBody MovieInfo updatedMovieInfo, @PathVariable String id){
+    public Mono<ResponseEntity<MovieInfo>> updateMovieInfo(@RequestBody MovieInfo updatedMovieInfo, @PathVariable String id) {
         return movieInfoService.updateMovieInfo(updatedMovieInfo, id).map(movieInfo ->
-            ResponseEntity.ok().body(movieInfo)
+                ResponseEntity.ok().body(movieInfo)
         ).switchIfEmpty(Mono.just(ResponseEntity.notFound().build())).log();
     }
 
     @DeleteMapping("movieinfo/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> deleteMovieInfo(@PathVariable String id){
+    public Mono<Void> deleteMovieInfo(@PathVariable String id) {
         return movieInfoService.deleteMovieInfo(id).log();
     }
+
 
 }

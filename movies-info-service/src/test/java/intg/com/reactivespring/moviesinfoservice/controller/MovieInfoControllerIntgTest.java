@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -76,6 +77,54 @@ class MovieInfoControllerIntgTest {
                 .expectBodyList(MovieInfo.class)
                 .hasSize(3);
     }
+
+    @Test
+    void getAllMovieInfosByYear() {
+        var year = 2005;
+        var url = UriComponentsBuilder.fromUriString(MOVIES_INFO_URI)
+                .queryParam("year", year)
+                        .buildAndExpand()
+                                .toUri();
+
+        webTestClient.get()
+                .uri(url)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBodyList(MovieInfo.class)
+                .hasSize(1);
+    }
+    @Test
+    void getAllMovieInfosByYear_handling_notfound() {
+        var year = 2030;
+        var url = UriComponentsBuilder.fromUriString(MOVIES_INFO_URI)
+                .queryParam("year", year)
+                .buildAndExpand()
+                .toUri();
+
+        webTestClient.get()
+                .uri(url)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+    @Test
+    void getAllMovieInfosByName() {
+        var name = "Dark Knight Rises";
+        var url = UriComponentsBuilder.fromUriString(MOVIES_INFO_URI)
+                .queryParam("name", name)
+                .buildAndExpand()
+                .toUri();
+
+        webTestClient.get()
+                .uri(url)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBodyList(MovieInfo.class)
+                .hasSize(1);
+    }
+
 
     @Test
     void getMovieInfoById() {
