@@ -78,7 +78,7 @@ class MovieInfoControllerIntgTest {
     }
 
     @Test
-    void getAllMovieInfoById() {
+    void getMovieInfoById() {
 
         var MOVIE_ID = "abc";
 
@@ -95,6 +95,20 @@ class MovieInfoControllerIntgTest {
 //                    var movieInfo = listEntityExchangeResult.getResponseBody();
 //                    assertEquals(MOVIE_ID,movieInfo.getMovieInfoId());
 //                });
+    }
+
+    @Test
+    void getMovieInfoById_handling_notfound() {
+
+        var MOVIE_ID = "def";
+
+        webTestClient.get()
+                .uri(MOVIES_INFO_URI+"/{id}",MOVIE_ID)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+
+
     }
 
     @Test
@@ -118,6 +132,20 @@ class MovieInfoControllerIntgTest {
                     assertEquals("Dark Knight Rises 1", updatedMovieInfo.getName());
 
                 });
+    }
+    @Test
+    void updateMovieInfoById_handling_notfound() {
+
+        var MOVIE_ID = "def";
+        var movieInfo = new MovieInfo("abc", "Dark Knight Rises 1",
+                2012, List.of("Christian Bale", "Tom Hardy"), LocalDate.parse("2012-07-20"));
+
+        webTestClient.put()
+                .uri(MOVIES_INFO_URI+"/{id}",MOVIE_ID)
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 
     @Test
