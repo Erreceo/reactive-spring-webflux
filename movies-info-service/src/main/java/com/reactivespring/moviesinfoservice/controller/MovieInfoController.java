@@ -20,7 +20,6 @@ public class MovieInfoController {
         this.movieInfoService = movieInfoService;
     }
 
-
     @PostMapping("/movieinfo")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<MovieInfo> addMovieInfo(@RequestBody @Valid MovieInfo movieInfo) {
@@ -28,17 +27,18 @@ public class MovieInfoController {
     }
 
     @GetMapping("/movieinfo")
-    public Flux<MovieInfo> getAllMovies(@RequestParam(value = "year", required = false) Integer year, @RequestParam(value = "name", required = false) String name) {
+    public Flux<MovieInfo> getAllMovies(@RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "name", required = false) String name) {
 
         if (year != null) {
             return movieInfoService.getMovieInfoByYear(year).log();
         }
         if (name != null) {
             return movieInfoService.getMovieByName(name)
-                    .flatMapMany(Flux::just).log();
+                    .flatMapMany((t) -> Flux.just(t));
         }
         return movieInfoService.getAllMovieInfos().log();
-        
+
     }
 
     @GetMapping("/movieinfo/{id}")
@@ -49,10 +49,11 @@ public class MovieInfoController {
     }
 
     @PutMapping("/movieinfo/{id}")
-    public Mono<ResponseEntity<MovieInfo>> updateMovieInfo(@RequestBody MovieInfo updatedMovieInfo, @PathVariable String id) {
-        return movieInfoService.updateMovieInfo(updatedMovieInfo, id).map(movieInfo ->
-                ResponseEntity.ok().body(movieInfo)
-        ).switchIfEmpty(Mono.just(ResponseEntity.notFound().build())).log();
+    public Mono<ResponseEntity<MovieInfo>> updateMovieInfo(@RequestBody MovieInfo updatedMovieInfo,
+            @PathVariable String id) {
+        return movieInfoService.updateMovieInfo(updatedMovieInfo, id)
+                .map(movieInfo -> ResponseEntity.ok().body(movieInfo))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build())).log();
     }
 
     @DeleteMapping("movieinfo/{id}")
@@ -60,6 +61,5 @@ public class MovieInfoController {
     public Mono<Void> deleteMovieInfo(@PathVariable String id) {
         return movieInfoService.deleteMovieInfo(id).log();
     }
-
 
 }

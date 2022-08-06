@@ -1,3 +1,6 @@
+server:
+  port: 8081
+---
 spring:
   profiles:
     active: local
@@ -38,8 +41,3 @@ spring:
       port: 27027
       database: local
 ---
-logging:
-  level:
-    root: debug
-
-

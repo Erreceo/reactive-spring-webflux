@@ -22,7 +22,7 @@ public class FluxMonoControllerUnitTest {
         webTestClient
                 .get()
                 .uri("/flux")
-                .exchange()
+                .exchange() 
                 .expectStatus()
                 .is2xxSuccessful()
                 .expectBodyList(Integer.class)
