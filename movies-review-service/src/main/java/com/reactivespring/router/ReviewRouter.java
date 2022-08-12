@@ -17,10 +17,11 @@ public class ReviewRouter {
         return route()
                 .path("/v1/reviews",builder -> builder
 
-                                .POST( reviewHandler::addReview)
-                                .GET( reviewHandler::getReviews)
+                                .POST("", reviewHandler::addReview)
+                                .GET("", reviewHandler::getReviews)
                         .PUT("{id}", reviewHandler::updateReview)
                         .DELETE("{id}", reviewHandler::deleteReview)
+                        .GET("/stream", reviewHandler::getReviewsStream)
                     )
                 .GET("/v1/helloworld", request -> ServerResponse.ok().bodyValue("Hello World"))
                 .build() ;

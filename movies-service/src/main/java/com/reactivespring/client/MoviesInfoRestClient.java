@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.Exceptions;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
@@ -54,4 +55,29 @@ public class MoviesInfoRestClient {
 
     }
 
+    public Flux<MovieInfo> retriveMovieInfoStream() {
+         var  url = moviesInfoUrl.concat("/stream");
+
+         return webClient.get()
+                 .uri(url)
+                 .retrieve()
+                 .onStatus(HttpStatus::is4xxClientError, clientResponse -> {
+                     log.info("Status code is : {}", clientResponse.statusCode().value());
+                     if (clientResponse.statusCode().equals(HttpStatus.NOT_FOUND)) {
+                         return Mono.error(new MoviesInfoClientException("There is no MovieInfo Available for the passed in Id: ", clientResponse.statusCode().value()));
+                     }
+                     return clientResponse.bodyToMono(String.class)
+                             .flatMap(s -> Mono.error(new MoviesInfoClientException(s, clientResponse.statusCode().value())));
+                 }).onStatus(HttpStatus::is5xxServerError, clientResponse -> {
+                     log.info("Status code is : {}", clientResponse.statusCode().value());
+                     return clientResponse.bodyToMono(String.class)
+                             .flatMap(s -> Mono.error(new MoviesInfoServerException("Server Execption in MoviesInfoService "+s)));
+                 })
+                 .bodyToFlux(MovieInfo.class)
+//                .retry(3)
+                 .retryWhen(RetryUtil.retrySpec())
+                 .log();
+
+
+    }
 }
