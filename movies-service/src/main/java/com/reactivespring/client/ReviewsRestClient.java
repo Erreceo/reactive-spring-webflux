@@ -5,6 +5,7 @@ import com.reactivespring.exception.MoviesInfoClientException;
 import com.reactivespring.exception.MoviesInfoServerException;
 import com.reactivespring.exception.ReviewsClientException;
 import com.reactivespring.exception.ReviewsServerException;
+import com.reactivespring.util.RetryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -47,9 +48,10 @@ public class ReviewsRestClient {
                 }).onStatus(HttpStatus::is5xxServerError, clientResponse -> {
                     log.info("Status code is : {}", clientResponse.statusCode().value());
                     return clientResponse.bodyToMono(String.class)
-                            .flatMap(s -> Mono.error(new ReviewsServerException("Server Execption in MoviesInfoService "+s)));
+                            .flatMap(s -> Mono.error(new ReviewsServerException("Server Execption in ReviewService "+s)));
                 })
                 .bodyToFlux(Review.class)
+                .retryWhen(RetryUtil.retrySpec())
                 .log();
 
     }
